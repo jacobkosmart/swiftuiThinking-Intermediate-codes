@@ -106,21 +106,131 @@ Text("RESET")
 
 ### 02.MagnificationGesture
 
-```swift
+magnification gesture basically the zoom in and out gesture that you use on the map on your iphone. if you have instagram you can zoom in on pictures that is a magnification gesture
 
+```swift
+struct MagnificationGestureBootCamp: View {
+// MARK: -  PROPERTY
+
+@State var currentAmount: CGFloat = 0
+@State var lastAmount: CGFloat = 0
+
+// MARK: -  BODY
+var body: some View {
+Text("Hello, World!")
+.font(.title)
+.padding(40)
+.background(Color.red)
+.cornerRadius(10)
+.scaleEffect(1 + currentAmount + lastAmount)
+.gesture(
+  MagnificationGesture()
+    .onChanged({ value in
+      currentAmount = value - 1
+    })
+    .onEnded({ value in
+      lastAmount += currentAmount
+      currentAmount = 0
+    })
+
+)
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/156959748-1604953e-0397-40a7-8cc3-c105a5aefbeb.gif">
+
+```swift
+
+@State var currentAmount: CGFloat = 0
+
+// MARK: -  BODY
+var body: some View {
+VStack (spacing: 10) {
+
+HStack {
+  Circle().frame(width: 35, height: 35)
+  Text("SwiftUI Thinking")
+  Spacer()
+  Image(systemName: "ellipsis")
+} //: HSTACK
+.padding(.horizontal)
+
+Rectangle()
+  .frame(height: 300)
+  .scaleEffect(1 + currentAmount)
+  .gesture(
+    MagnificationGesture()
+      .onChanged({ value in
+        currentAmount = value - 1
+      })
+      .onEnded({ value in
+        withAnimation(.spring()) {
+          currentAmount = 0
+        }
+      })
+  )
+
+HStack {
+  Image(systemName: "heart.fill")
+  Image(systemName: "text.bubble.fill")
+  Spacer()
+} //: HSTACK
+.padding(.horizontal)
+.font(.headline)
+
+Text("This is the caption for my photo!")
+  .frame(maxWidth: .infinity, alignment: .leading)
+  .padding(.horizontal)
+} //: VSTACK
+}
+}
+```
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/156960792-f55f2b76-debe-44ed-8ab0-12c04f404f5e.gif">
 
 ---
 
 ### 03.RotationGesture
 
-```swift
+Rotation gesture is when you have two fingers on the device and you rotating an object and we can use it to rotate images, rotate text or rotate pretty much anything that we want on our swiftUI application 
 
+
+
+```swift
+struct RotationGestrueBootCamp: View {
+// MARK: -  PROPERTY
+
+@State var angle: Angle = Angle(degrees: 0)
+
+// MARK: -  BODY
+var body: some View {
+Text("Hello, World!")
+.font(.largeTitle)
+.fontWeight(.semibold)
+.foregroundColor(.white)
+.padding(50)
+.background(Color.blue)
+.cornerRadius(10)
+.rotationEffect(angle)
+.gesture(
+  RotationGesture()
+    .onChanged({ value in
+      angle = value
+    })
+    .onEnded({ value in
+      withAnimation(.spring()) {
+        angle = Angle(degrees: 0)
+      }
+    })
+)
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+
+
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/156961759-14048266-1a21-452d-a7a5-4cd4c10d3124.gif">
 
 ---
 
