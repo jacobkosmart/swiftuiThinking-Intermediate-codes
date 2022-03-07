@@ -11,6 +11,7 @@
 		81AAF97827D5935200BD4A75 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AAF97727D5935200BD4A75 /* ContentView.swift */; };
 		81AAF97A27D5935400BD4A75 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81AAF97927D5935400BD4A75 /* Assets.xcassets */; };
 		81AAF97D27D5935400BD4A75 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81AAF97C27D5935400BD4A75 /* Preview Assets.xcassets */; };
+		81AAF98427D59D1100BD4A75 /* LongPressGestureBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AAF98327D59D1100BD4A75 /* LongPressGestureBootCamp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		81AAF97727D5935200BD4A75 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		81AAF97927D5935400BD4A75 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		81AAF97C27D5935400BD4A75 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		81AAF98327D59D1100BD4A75 /* LongPressGestureBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongPressGestureBootCamp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +55,7 @@
 			children = (
 				81AAF97527D5935200BD4A75 /* SwiftuiThinkingIntermediateApp.swift */,
 				81AAF97727D5935200BD4A75 /* ContentView.swift */,
+				81AAF98327D59D1100BD4A75 /* LongPressGestureBootCamp.swift */,
 				81AAF97927D5935400BD4A75 /* Assets.xcassets */,
 				81AAF97B27D5935400BD4A75 /* Preview Content */,
 			);
@@ -139,6 +142,7 @@
 			files = (
 				81AAF97827D5935200BD4A75 /* ContentView.swift in Sources */,
 				81AAF97627D5935200BD4A75 /* SwiftuiThinkingIntermediateApp.swift in Sources */,
+				81AAF98427D59D1100BD4A75 /* LongPressGestureBootCamp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
