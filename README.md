@@ -138,7 +138,6 @@ Text("Hello, World!")
 }
 ```
 
-
   <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/156959748-1604953e-0397-40a7-8cc3-c105a5aefbeb.gif">
 
 ```swift
@@ -187,15 +186,14 @@ Text("This is the caption for my photo!")
 }
 }
 ```
+
   <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/156960792-f55f2b76-debe-44ed-8ab0-12c04f404f5e.gif">
 
 ---
 
 ### 03.RotationGesture
 
-Rotation gesture is when you have two fingers on the device and you rotating an object and we can use it to rotate images, rotate text or rotate pretty much anything that we want on our swiftUI application 
-
-
+Rotation gesture is when you have two fingers on the device and you rotating an object and we can use it to rotate images, rotate text or rotate pretty much anything that we want on our swiftUI application
 
 ```swift
 struct RotationGestrueBootCamp: View {
@@ -228,19 +226,161 @@ Text("Hello, World!")
 }
 ```
 
-
-
   <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/156961759-14048266-1a21-452d-a7a5-4cd4c10d3124.gif">
 
 ---
 
 ### 04.DragGesture
 
-```swift
+The drag gesture is what it sounds like it's when you drag something around the screen. It is really cool features such as swiping on cards if you could use a drag gesture to swipe the cards left and right drag gesture to swipe up or swipe down different screens in our app
 
+```swift
+struct DragGestureBootCamp: View {
+// MARK: -  PROPERTY
+
+@State var offset: CGSize = .zero
+
+// MARK: -  BODY
+var body: some View {
+ZStack {
+
+VStack {
+Text("\(offset.width)")
+Spacer()
+} //: VSTACK
+
+RoundedRectangle(cornerRadius: 20)
+.frame(width: 300, height: 500)
+.offset(offset)
+.scaleEffect(getScaleAmount())
+.rotationEffect(Angle(degrees: getRotationAmount()))
+.gesture(
+DragGesture()
+  .onChanged({ value in
+    withAnimation(.spring()) {
+      offset = value.translation
+    }
+  })
+  .onEnded({ value in
+    withAnimation(.spring()) {
+      offset = .zero
+    }
+  })
+)
+} //: ZSTACK
+}
+
+// MARK: -  FUNCTION
+func getScaleAmount() -> CGFloat {
+  let max = UIScreen.main.bounds.width / 2
+  // 절대값으로 abs 붙여줌
+  let currentAmount = abs(offset.width)
+  let percentage = currentAmount / max
+  // 최소 값이 0.5 에서 천천히 변하기 위해 * 0.5 해줌
+  return 1.0 - min(percentage, 0.5) * 0.5
+}
+
+func getRotationAmount() -> Double {
+  let max = UIScreen.main.bounds.width / 2
+  let currentAmount = offset.width
+  let percentage = currentAmount / max
+  let percentageAsDouble  = Double(percentage)
+  let maxAngle: Double = 10
+  return percentageAsDouble * maxAngle
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+<img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/157175819-34accd0b-a501-4f57-be49-986a721ac8b4.gif">
+
+```swift
+struct DragGestureBootCamp2: View {
+// MARK: -  PROPERTY
+
+@State var startOffsetY: CGFloat = UIScreen.main.bounds.height * 0.85
+@State var currentDragOffsetY: CGFloat = 0
+@State var endingOffsetY: CGFloat = 0
+
+// MARK: -  BODY
+var body: some View {
+ZStack {
+// Background
+Color.green.ignoresSafeArea()
+
+// Foreground
+MySingUpView()
+.offset(y: startOffsetY)
+.offset(y: currentDragOffsetY)
+.offset(y: endingOffsetY)
+.gesture(
+DragGesture()
+.onChanged({ value in
+  withAnimation(.spring()) {
+    currentDragOffsetY = value.translation.height
+  }
+})
+.onEnded({ value in
+  withAnimation(.spring()) {
+    if currentDragOffsetY < -150 {
+      // cancel offset
+      endingOffsetY = -startOffsetY
+    } else if endingOffsetY != 0 && currentDragOffsetY > 150 {
+      endingOffsetY = 0
+    }
+    currentDragOffsetY = 0
+  }
+})
+)
+
+Text("\(currentDragOffsetY)")
+} //: ZSTACK
+.ignoresSafeArea(edges: .bottom)
+}
+}
+
+// MARK: -  PREVIEW
+struct DragGestureBootCamp2_Previews: PreviewProvider {
+static var previews: some View {
+DragGestureBootCamp2()
+}
+}
+
+
+// MARK: -  EXTENSION
+struct MySingUpView: View {
+var body: some View {
+VStack (spacing: 20) {
+  Image(systemName: "chevron.up")
+    .padding(.top)
+  Text("Sign up")
+    .font(.headline)
+    .fontWeight(.semibold)
+
+  Image(systemName: "flame.fill")
+    .resizable()
+    .scaledToFit()
+    .frame(width: 100, height: 100)
+
+  Text("This is the decription for our app. This is my favorite SwiftUI course and I recommend to all of my fiends to subscribe to SwiftUI Thinking!")
+    .multilineTextAlignment(.center)
+
+  Text("Create An Account")
+    .foregroundColor(.white)
+    .font(.headline)
+    .padding()
+    .padding(.horizontal)
+    .background(Color.black.cornerRadius(10))
+
+  Spacer()
+} //: VSTACK
+.frame(maxWidth: .infinity)
+.background(Color.white)
+.cornerRadius(30)
+}
+}
+```
+
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/157179054-386adbf1-c18f-41eb-84e4-9e4550656a7f.gif">
 
 ---
 
