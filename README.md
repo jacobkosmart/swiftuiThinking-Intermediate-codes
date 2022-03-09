@@ -386,11 +386,61 @@ VStack (spacing: 20) {
 
 ### 05.ScrollViewReader
 
-```swift
+When we add a very basic scroll view to application we can scroll manually up and down but we cannot automatically scroll to the bottom or scroll to the middle or scroll anywhere automatically in that scroll view
 
+In ScrollViewReader to th app can add features to automatically scroll to the bottom of our scroll view or to any certain point in our scroll view
+
+```swift
+struct ScrollViewReaderBootCamp: View {
+// MARK: -  PROPERTY
+@State var scrollToIndex: Int = 0
+@State var textFieldText: String = ""
+
+// MARK: -  BODY
+var body: some View {
+VStack {
+TextField("Ender a # here", text: $textFieldText)
+.frame(height: 55)
+.border(Color.gray)
+.padding(.horizontal)
+.keyboardType(.numberPad)
+
+Button {
+withAnimation(.easeInOut) {
+if let index = Int(textFieldText) {
+  scrollToIndex = index
+}
+}
+} label: {
+Text("Scroll Now")
+}
+
+ScrollView {
+// proxy is basically reading the size of the scroll view
+ScrollViewReader { proxy in
+ForEach(0..<50) { index in
+  Text("This is item #\(index)")
+    .frame(height: 200)
+    .frame(maxWidth: .infinity)
+    .background(Color.white)
+    .cornerRadius(10)
+    .shadow(radius: 10)
+    .padding()
+    .id(index)
+} //: LOOP
+.onChange(of: scrollToIndex) { newValue in
+  withAnimation(.spring()) {
+    proxy.scrollTo(newValue, anchor: .top)
+  }
+}
+} //: SCROLLREADER
+} //: SCROLL
+} //: VSTACK
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/157370971-3716cd7a-6834-4654-b421-3eb620ecf3ad.gif">
 
 ---
 

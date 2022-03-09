@@ -16,6 +16,8 @@
 		81AAF98427D59D1100BD4A75 /* LongPressGestureBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81AAF98327D59D1100BD4A75 /* LongPressGestureBootCamp.swift */; };
 		81CF767127D71FFB00056C8E /* DragGestureBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CF767027D71FFB00056C8E /* DragGestureBootCamp.swift */; };
 		81CF767327D7288100056C8E /* DragGestureBootCamp2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81CF767227D7288100056C8E /* DragGestureBootCamp2.swift */; };
+		81F1C19A27D8598F00D71CEF /* ScrollViewReaderBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1C19927D8598E00D71CEF /* ScrollViewReaderBootCamp.swift */; };
+		81F1C19C27D8613100D71CEF /* GeometryReaderBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1C19B27D8613000D71CEF /* GeometryReaderBootCamp.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +31,8 @@
 		81AAF98327D59D1100BD4A75 /* LongPressGestureBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LongPressGestureBootCamp.swift; sourceTree = "<group>"; };
 		81CF767027D71FFB00056C8E /* DragGestureBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragGestureBootCamp.swift; sourceTree = "<group>"; };
 		81CF767227D7288100056C8E /* DragGestureBootCamp2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragGestureBootCamp2.swift; sourceTree = "<group>"; };
+		81F1C19927D8598E00D71CEF /* ScrollViewReaderBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewReaderBootCamp.swift; sourceTree = "<group>"; };
+		81F1C19B27D8613000D71CEF /* GeometryReaderBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryReaderBootCamp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,8 @@
 				81464FD227D5AEB6008591D3 /* RotationGestrueBootCamp.swift */,
 				81CF767027D71FFB00056C8E /* DragGestureBootCamp.swift */,
 				81CF767227D7288100056C8E /* DragGestureBootCamp2.swift */,
+				81F1C19927D8598E00D71CEF /* ScrollViewReaderBootCamp.swift */,
+				81F1C19B27D8613000D71CEF /* GeometryReaderBootCamp.swift */,
 				81AAF97927D5935400BD4A75 /* Assets.xcassets */,
 				81AAF97B27D5935400BD4A75 /* Preview Content */,
 			);
@@ -155,6 +161,8 @@
 				81464FD327D5AEB6008591D3 /* RotationGestrueBootCamp.swift in Sources */,
 				81AAF97827D5935200BD4A75 /* ContentView.swift in Sources */,
 				81CF767327D7288100056C8E /* DragGestureBootCamp2.swift in Sources */,
+				81F1C19A27D8598F00D71CEF /* ScrollViewReaderBootCamp.swift in Sources */,
+				81F1C19C27D8613100D71CEF /* GeometryReaderBootCamp.swift in Sources */,
 				81AAF97627D5935200BD4A75 /* SwiftuiThinkingIntermediateApp.swift in Sources */,
 				81464FD127D5A8A4008591D3 /* MagnificationGestureBootCamp.swift in Sources */,
 				81CF767127D71FFB00056C8E /* DragGestureBootCamp.swift in Sources */,
