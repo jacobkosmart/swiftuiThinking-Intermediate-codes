@@ -446,11 +446,64 @@ ForEach(0..<50) { index in
 
 ### 06.GeometryReader
 
-```swift
+Using GeometryReader we can basically get the exact size and location of objects on the screen.
 
+Sometimes when you are building complex applications you do want make sure certain things are specific sizes or maybe specific locations on your app an to do that we can use the geometry reader
+
+GeometryReader is very expensive it costs a lot of computing power to use and you put too many geometry readers and the geometries are doing a lot of tasks on the screen
+
+```swift
+struct GeometryReaderBootCamp: View {
+
+// MARK: -  BODY
+var body: some View {
+// geometry which is the size basically of the content that's inside it
+GeometryReader { geometry in
+HStack (spacing: 0) {
+  Rectangle()
+    .fill(Color.red)
+  //  UIScreen.main.bounds.width 으로 크기를 설정하면 rotation 할때 크기가 고정되지 않음
+    // .frame(width: UIScreen.main.bounds.width * 0.6666)
+    // GeometryReader 를 사용하면 rotation 되도 같은 설정으로 유지됨
+    .frame(width: geometry.size.width * 0.6666)
+  Rectangle()
+    .fill(Color.blue)
+} //: HSTACK
+.ignoresSafeArea()
+}
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+![Kapture 2022-03-09 at 13 31 56](https://user-images.githubusercontent.com/28912774/157373187-08b4bef0-c721-4253-bb6b-6208087e3067.gif)
+
+```swift
+struct GeometryReaderBootCamp: View {
+// MARK: -  BODY
+var body: some View {
+ScrollView(.horizontal, showsIndicators: false) {
+HStack {
+ForEach(0..<20) { index in
+  GeometryReader { geometry in
+    RoundedRectangle(cornerRadius: 20)
+      .rotation3DEffect(Angle(degrees: getPercentage(geo: geometry) * 10), axis: (x: 0.0, y: 1.0, z: 0.0))
+  }
+  .frame(width: 300, height: 250)
+  .padding()
+}
+} //: HSTACK
+} //: SCROLL
+}
+// MARK: -  FUNCTION
+func getPercentage(geo: GeometryProxy)-> Double {
+  let maxDistance = UIScreen.main.bounds.width / 2
+  let currentX = geo.frame(in: .global).midX
+  return Double(1 - (currentX / maxDistance))
+}
+}
+```
+
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/157374782-98714811-673c-4173-82bc-ef5d7395b398.gif">
 
 ---
 
