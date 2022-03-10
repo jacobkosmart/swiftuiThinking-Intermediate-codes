@@ -509,23 +509,260 @@ func getPercentage(geo: GeometryProxy)-> Double {
 
 ### 07.Present multiple sheets from a single view
 
+Use a sheet modifier they try to add some conditional logic in the sheet and then go to present a second or third screen it's wring screen
+
+#### 1. Use a binding
+
+단점은 nextScreen 이 복잡해지고 변수가 많을 경우에는 일일히 다 binding 해줘야 되서 code 가 복잡해짐
+
 ```swift
+import SwiftUI
+
+// 1 - Use a binding
+
+// MARK: -  MODEL
+struct RandomModel: Identifiable {
+	let id = UUID().uuidString
+	let title: String
+}
+
+struct MultipleSheetBootCamp: View {
+// MARK: -  PROPERTY
+@State var selectedModel: RandomModel = RandomModel(title: "Starting Title")
+@State var showSheet: Bool = false
+@State var selectedIndex: Int = 0
+
+
+// MARK: -  BODY
+var body: some View {
+VStack (spacing: 20) {
+  Button {
+    selectedIndex = 1
+    selectedModel = RandomModel(title: "One")
+    showSheet.toggle()
+  } label: {
+    Text("Button 1")
+  }
+
+  Button {
+    selectedIndex = 2
+    selectedModel = RandomModel(title: "Two")
+    showSheet.toggle()
+  } label: {
+    Text("Button 2")
+  }
+} //: VSTACK
+.sheet(isPresented: $showSheet) {
+  // selectedModel 이 이미 초기값 상태 (starting Title) 인상태 에서 넘어가기 때문에 sheet 을 닫은다음에
+  // 다시 열어야지 title 이 업데이트가 됨
+  // 1번째 방법: Use a binding - 단점은 nextScreen 이 복잡해지고 변수가 많을 경우에는 일일히 다 binding 해줘야 되서 code 가 복잡해짐
+  NextScreen(selectedModel: $selectedModel)
+}
+}
+}
+
+// MARK: -  NEXTSCREEN
+struct NextScreen: View {
+
+@Binding var selectedModel: RandomModel
+
+var body: some View {
+  Text(selectedModel.title)
+    .font(.largeTitle)
+}
+}
+```
+
+#### 2. Use multiple sheets
+
+Creating two sheets all you have to do is make sure they are not in the same hierarchy of each other
+
+```swift
+import SwiftUI
+
+// 2 - Use multiple .sheets
+
+// MARK: -  MODEL
+struct RandomModel: Identifiable {
+let id = UUID().uuidString
+let title: String
+}
+
+struct MultipleSheetBootCamp: View {
+// MARK: -  PROPERTY
+@State var selectedModel: RandomModel = RandomModel(title: "Starting Title")
+@State var showSheet: Bool = false
+@State var showSheet2: Bool = false
+
+
+// MARK: -  BODY
+var body: some View {
+VStack (spacing: 20) {
+  Button {
+    showSheet.toggle()
+  } label: {
+    Text("Button 1")
+  }
+  .sheet(isPresented: $showSheet) {
+    NextScreen(selectedModel: RandomModel(title: "One"))
+  }
+
+  Button {
+    showSheet2.toggle()
+  } label: {
+    Text("Button 2")
+  }
+  .sheet(isPresented: $showSheet2) {
+    NextScreen(selectedModel: RandomModel(title: "Two"))
+  }
+} //: VSTACK
+}
+}
+
+// MARK: -  NEXTSCREEN
+struct NextScreen: View {
+
+let selectedModel: RandomModel
+
+var body: some View {
+Text(selectedModel.title)
+  .font(.largeTitle)
+}
+}
+```
+
+#### 3. Use $item
+
+2번 방법에서 multiple .sheets 를 사용하면 해결 되지만 만약 필요로 하는 sheet 의 갯수가 많아지면 일일히 다 만들어야 되기 때문에, $item 방법으로 multiple .sheet 을 만들 수 있습니다
+
+```swift
+import SwiftUI
+
+// 3 - Use $item
+
+// MARK: -  MODEL
+struct RandomModel: Identifiable {
+let id = UUID().uuidString
+let title: String
+}
+
+struct MultipleSheetBootCamp: View {
+// MARK: -  PROPERTY
+@State var selectedModel: RandomModel? = nil
+
+
+// MARK: -  BODY
+var body: some View {
+ScrollView(.vertical, showsIndicators: false) {
+VStack (spacing: 20) {
+  // 버튼 50개 생성
+  ForEach(0..<50) { index in
+    Button {
+      selectedModel = RandomModel(title: "\(index)")
+    } label: {
+      Text("Button \(index)")
+    }
+  }
+} //: VSTACK
+.sheet(item: $selectedModel) { model in
+  NextScreen(selectedModel: model)
+}
+} //: SCROLL
+}
+}
+
+// MARK: -  NEXTSCREEN
+struct NextScreen: View {
+
+let selectedModel: RandomModel
+
+var body: some View {
+Text(selectedModel.title)
+.font(.largeTitle)
+}
+}
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/157386876-d5d07e7f-0fa1-483e-a6be-e434994090fa.gif">
 
 ---
 
 ### 08.mask
 
-```swift
+We have one view that is on the bottom then another view that's on the top and then we can mask the top view so that it confirms to the same shape as the bottom view -> Thiis is the mask modifier
 
+```swift
+// mask 를 사용하지 않고,  클릭시 별 색 바뀌게 만들기
+struct MaskBootCamp: View {
+	// MARK: -  PROPERTY
+@State var rating: Int = 3
+
+// MARK: -  BODY
+var body: some View {
+ZStack {
+HStack {
+ForEach(1..<6) { index in
+  Image(systemName: "star.fill")
+    .font(.largeTitle)
+    .foregroundColor(rating >= index ? Color.yellow : Color.gray)
+    .onTapGesture {
+      rating = index
+    }
+} //: LOOP
+} //: HSTACK
+} //: ZSTACK
+}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/157586084-89a96a9c-e89d-409f-8751-9177c6955c7d.gif">
 
----
+```swift
+struct MaskBootCamp: View {
+// MARK: -  PROPERTY
+@State var rating: Int = 0
+
+// MARK: -  BODY
+var body: some View {
+ZStack {
+starsView
+.overlay(
+  overlayView
+    .mask(starsView)
+)
+} //: ZSTACK
+}
+
+private var overlayView: some View {
+GeometryReader { geometry in
+ZStack(alignment: .leading) {
+Rectangle()
+  .foregroundColor(.yellow)
+  .frame(width: CGFloat(rating) / 5 * geometry.size.width)
+} //: ZSTACK
+} //: GEOMETRY
+.allowsHitTesting(false)
+}
+
+private var starsView: some View {
+HStack {
+ForEach(1..<6) { index in
+Image(systemName: "star.fill")
+  .font(.largeTitle)
+  .foregroundColor(Color.gray)
+  .onTapGesture {
+    withAnimation(.easeInOut) {
+      rating = index
+    }
+  }
+} //: LOOP
+} //: HSTACK
+}
+}
+```
+
+## <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/157588713-c3c41f0d-38a7-44ed-957b-53161850406c.gif">
 
 ### 09.Sound effects
 
