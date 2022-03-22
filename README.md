@@ -767,20 +767,101 @@ Image(systemName: "star.fill")
 ### 09.Sound effects
 
 ```swift
+import SwiftUI
+import AVKit
+
+
+// MARK: -  VIEWMODEL
+
+class SoundManager: ObservableObject {
+
+var player: AVAudioPlayer?
+
+enum SoundOption: String {
+case tada
+case badum
+}
+
+func playSound(sound: SoundOption) {
+
+guard let url = Bundle.main.url(forResource: sound.rawValue, withExtension: ".mp3") else { return }
+
+do {
+  player = try AVAudioPlayer(contentsOf: url)
+  player?.play()
+} catch let error {
+  print("Error playing sound. \(error.localizedDescription)")
+}
+}
+}
+
+struct SoundBootCamp: View {
+@StateObject var vm: SoundManager = SoundManager()
+
+// MARK: -  BODY
+var body: some View {
+VStack (spacing: 40) {
+  Button {
+    vm.playSound(sound: .tada)
+  } label: {
+    Text("Play sound 1")
+  }
+
+  Button {
+    vm.playSound(sound: .badum)
+  } label: {
+    Text("Play sound 2")
+  }
+} //: VSTACK
+}
+}
 
 ```
-
-  <img height="350"  alt="스크린샷" src="">
 
 ---
 
 ### 10.Haptic and vibrations
 
-```swift
+In iOS when user clicks or error message you can add vibrations to the device
 
+```swift
+import SwiftUI
+
+
+class HapticManager {
+	static let instance = HapticManager() // Singleton
+
+	func notification(type: UINotificationFeedbackGenerator.FeedbackType) {
+		let generator = UINotificationFeedbackGenerator()
+		generator.notificationOccurred(type)
+	}
+
+	func impact(style: UIImpactFeedbackGenerator.FeedbackStyle) {
+		let generaotr = UIImpactFeedbackGenerator(style: style)
+		generaotr.impactOccurred()
+	}
+}
+
+struct HapticsBootCamp: View {
+	var body: some View {
+		VStack (spacing: 20) {
+			Button("success") { HapticManager.instance.notification(type: .success) }
+			Button("warning") { HapticManager.instance.notification(type: .warning) }
+			Button("error") { HapticManager.instance.notification(type: .error) }
+
+			Divider()
+
+			Button("soft") { HapticManager.instance.impact(style: .soft) }
+			Button("light") { HapticManager.instance.impact(style: .light) }
+			Button("medium") { HapticManager.instance.impact(style: .medium) }
+			Button("rigid") { HapticManager.instance.impact(style: .rigid) }
+			Button("heavy") { HapticManager.instance.impact(style: .heavy) }
+		}
+	}
+}
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+  <!-- <img height="350"  alt="스크린샷" src=""> -->
 
 ---
 
