@@ -9,9 +9,9 @@ import SwiftUI
 
 @main
 struct SwiftuiThinkingIntermediateApp: App {
-    var body: some Scene {
-        WindowGroup {
-					NotificationBootCamp()
-        }
-    }
+	var body: some Scene {
+		WindowGroup {
+			CoreDataBootCamp()
+		}
+	}
 }

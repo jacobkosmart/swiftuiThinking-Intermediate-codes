@@ -1249,18 +1249,349 @@ ForEach(vm.mappedArray, id: \.self) { name in
 
 ### 14.Core Data
 
+To use Core Data stored within the device to save data to it and this data would persist between sessions so if a user closes the app and reopens the app
+
 #### FetchRequest
 
+- 새로운 프로젝트 만들고 Core Data 를 체크하면 apple 에서 제공하는 template 을 통해서 @FetchRequest property 를 사용해서, CoreData 에 CRUD 를 하는 예제 입니다
+
+<img width="1089" alt="image" src="https://user-images.githubusercontent.com/28912774/159641050-37918c94-755d-46db-bd03-2f418a916007.png">
+
 ```swift
+// in @main
+import SwiftUI
+
+@main
+struct CoreDataBootCampApp: App {
+let persistenceController = PersistenceController.shared
+
+var body: some Scene {
+WindowGroup {
+  ContentView()
+    .environment(\.managedObjectContext, persistenceController.container.viewContext)
+}
+}
+}
+```
+
+```swift
+// in Persistence
+
+import CoreData
+
+struct PersistenceController {
+static let shared = PersistenceController()
+
+static var preview: PersistenceController = {
+let result = PersistenceController(inMemory: true)
+let viewContext = result.container.viewContext
+for x in 0..<10 {
+let newFruit = FruitEntity(context: viewContext)
+newFruit.name = "Apple \(x)"
+}
+do {
+try viewContext.save()
+} catch {
+// Replace this implementation with code to handle the error appropriately.
+// fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+let nsError = error as NSError
+fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+}
+return result
+}()
+
+let container: NSPersistentContainer
+
+init(inMemory: Bool = false) {
+container = NSPersistentContainer(name: "CoreDataBootCamp")
+if inMemory {
+container.persistentStoreDescriptions.first!.url = URL(fileURLWithPath: "/dev/null")
+}
+container.viewContext.automaticallyMergesChangesFromParent = true
+container.loadPersistentStores(completionHandler: { (storeDescription, error) in
+if let error = error as NSError? {
+  // Replace this implementation with code to handle the error appropriately.
+  // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+
+  /*
+    Typical reasons for an error here include:
+    * The parent directory does not exist, cannot be created, or disallows writing.
+    * The persistent store is not accessible, due to permissions or data protection when the device is locked.
+    * The device is out of space.
+    * The store could not be migrated to the current model version.
+    Check the error message to determine what the actual problem was.
+    */
+  fatalError("Unresolved error \(error), \(error.userInfo)")
+}
+})
+}
+}
 
 ```
 
-  <img height="350"  alt="스크린샷" src="">
+```swift
+// in ContentView
+
+import SwiftUI
+  import CoreData
+
+  struct ContentView: View {
+  @Environment(\.managedObjectContext) private var viewContext
+
+  @FetchRequest(
+  entity: FruitEntity.entity(),
+  sortDescriptors: [NSSortDescriptor(keyPath: \FruitEntity.name, ascending: true)])
+  var fruits: FetchedResults<FruitEntity>
+
+  @State var textFiedlText: String = ""
+
+  var body: some View {
+  NavigationView {
+  VStack (spacing: 20) {
+
+  TextField("Add fruit here...", text: $textFiedlText)
+    .font(.headline)
+    .padding(.leading)
+    .foregroundColor(.white)
+    .frame(maxWidth: .infinity)
+    .frame(height: 55)
+    .padding(.horizontal)
+
+  Button {
+    addItem()
+  } label: {
+    Text("Submit")
+      .font(.headline)
+      .foregroundColor(.white)
+      .frame(maxWidth: .infinity)
+      .frame(height: 55)
+      .background(Color.cyan.cornerRadius(10))
+  }
+  .padding(.horizontal)
+
+
+  List {
+    ForEach(fruits) { fruit in
+      Text(fruit.name ?? "")
+        .onTapGesture {
+          updateItem(fruit: fruit)
+        }
+    }
+    .onDelete(perform: deleteItems)
+  }
+  .navigationTitle("Fruits")
+  }
+  .background(.ultraThickMaterial)
+  }
+  }
+
+private func addItem() {
+  withAnimation {
+    let newFruit = FruitEntity(context: viewContext)
+    newFruit.name = textFiedlText
+    saveItem()
+    textFiedlText = ""
+  }
+}
+
+private func updateItem(fruit: FruitEntity) {
+  withAnimation {
+    let currentName = fruit.name ?? ""
+    let newName = currentName + "!"
+    fruit.name = newName
+
+    saveItem()
+  }
+}
+
+private func deleteItems(offsets: IndexSet) {
+  withAnimation {
+    guard let index = offsets.first else { return }
+    let fruitEntity = fruits[index]
+    viewContext.delete(fruitEntity)
+    saveItem()
+  }
+}
+
+private func saveItem() {
+  do {
+    try viewContext.save()
+  } catch {
+    // Replace this implementation with code to handle the error appropriately.
+    // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+    let nsError = error as NSError
+    fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+  }
+}
+}
+
+private let itemFormatter: DateFormatter = {
+let formatter = DateFormatter()
+formatter.dateStyle = .short
+formatter.timeStyle = .medium
+return formatter
+}()
+
+struct ContentView_Previews: PreviewProvider {
+static var previews: some View {
+  ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+}
+}
+
+```
+
+  <img height="350"  alt="스크린샷" src="https://user-images.githubusercontent.com/28912774/159642146-00056d0d-c69f-4a90-b87c-7e9455be85c9.gif">
 
 #### Core Data with MVVM
 
-```swift
+위의 스크린샷과 결과는 같지만, MVVM 로직으로 작성하는 방법 (Core data template 사용하지 않고 하기)
 
+- 먼저 new file 에서 core data 파일을 만들고, `Add Entity -> Attribute 에서 Name: String ` 순으로 core data 속성만들기
+
+```swift
+import SwiftUI
+import CoreData
+
+// View - UI
+// Model - data point
+// ViewModel - manges the data for a view
+
+// MARK: -  VIEWMODEL
+class CoreDataViewModel: ObservableObject {
+// MARK: -  PROPERTY
+// NSPersistentContainer 생성
+let container: NSPersistentContainer
+// fetch 되서 저장될 data Array 만듬
+@Published var savedEntitied: [FruitEntity] = []
+
+// MARK: -  INIT
+init() {
+  // container 는 core data 의 FruitsContainer file 이름임
+  container = NSPersistentContainer(name: "FruitsContainer")
+  // container 의 loadPersistentStores 해줘서 core Data 로드 함
+  container.loadPersistentStores { description, error in
+    if let error = error {
+      print("ERROR LOADING CORE DATA: \(error)")
+    } else {
+      print("Successfully loaded core data!")
+    }
+  }
+  // Fruits 데이터 가져옴
+  fetchFruits()
+}
+// MARK: -  FUNCTION
+
+func fetchFruits() {
+  // core core 에 데이터 요청함
+  let request = NSFetchRequest<FruitEntity>(entityName: "FruitEntity")
+
+  do {
+    // error 가 없으면 container 에서 fetch 해옴
+    savedEntitied = try container.viewContext.fetch(request)
+  } catch let error {
+    // error 처리함
+      print("Error fetching. \(error)")
+  }
+}
+
+func addFruits(text: String) {
+  // new entity 의 attribute 생성
+  let newFruit = FruitEntity(context: container.viewContext)
+  // 입력 받은 text 가 새로운 데이터가 됨
+  newFruit.name = text
+  // 데이터 저장
+  saveData()
+}
+
+func updateFruit(entity: FruitEntity) {
+  // 선택된 entity 의 이름 가져옴
+  let currentName = entity.name ?? ""
+  // 실행될때 마다 ! 추가 시킴
+  let newName = currentName + "!"
+  // ! 된것을 entity name 에 저장 시킴
+  entity.name = newName
+  saveData()
+}
+
+
+func deleteFruit(indexSet: IndexSet) {
+  // 선택된 indexSet 에서 index 를 번호를 가져와서
+  guard let index = indexSet.first else { return }
+  // 그 index 에 맏는 값을 찾아서 entity 에 넣어서
+  let entity = savedEntitied[index]
+  // 그값을 삭제함
+  container.viewContext.delete(entity)
+  // 그리고 다시 저장
+  saveData()
+}
+
+// 저장, 업데이트, 삭제 하고나서 반드시 core data 도 데이터를 갱신해줘야 하기 때문에 저장을 진행 해야 함
+func saveData() {
+  do {
+    // error 가 없으면, 저장 진행하고, 데이터 다시 불러옴
+    try container.viewContext.save()
+    fetchFruits()
+  } catch let error {
+      print("Error saving. \(error)")
+  }
+}
+}
+
+
+struct CoreDataBootCamp: View {
+// MARK: -  PROPERTY
+@State  var vm = CoreDataViewModel()
+@State  var textFieldText: String = ""
+
+
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+VStack (spacing: 20) {
+TextField("Add fruit here...", text: $textFieldText)
+  .font(.headline)
+  .padding(.leading)
+  .frame(height: 55)
+  .background(Color.init(UIColor.placeholderText))
+  .cornerRadius(10)
+  .padding(.horizontal)
+
+Button {
+  // textField 가 비어있지 않으면 다음 로직 진행 비어 있으면 return
+  guard !textFieldText.isEmpty else { return }
+  // addFruit 함수에 textFieldText 입력
+  vm.addFruits(text: textFieldText)
+  // add 되면 textFieldText 다시 "" 로 초기화
+  textFieldText = ""
+} label: {
+  Text("SAVE")
+    .foregroundColor(.white)
+    .font(.headline)
+    .frame(height: 55)
+    .frame(maxWidth: .infinity)
+    .background(Color.cyan.cornerRadius(10))
+}
+.padding(.horizontal)
+
+
+List {
+  ForEach(vm.savedEntitied) { entity in
+    Text(entity.name ?? "NO NAME")
+      .onTapGesture {
+        vm.updateFruit(entity: entity)
+      }
+  }
+  .onDelete(perform: vm.deleteFruit)
+
+}
+.listStyle(.plain)
+
+Spacer()
+}
+.navigationTitle("Fruit")
+}
+}
+}
 ```
 
   <img height="350"  alt="스크린샷" src="">
