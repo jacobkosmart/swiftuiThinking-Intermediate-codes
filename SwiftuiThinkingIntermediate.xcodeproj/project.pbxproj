@@ -23,6 +23,7 @@
 		81E4613E27E97E5400196C3D /* HapticsBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E4613D27E97E5400196C3D /* HapticsBootCamp.swift */; };
 		81E4614027E9862B00196C3D /* NotificationBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E4613F27E9862B00196C3D /* NotificationBootCamp.swift */; };
 		81E9F3C527E45B3D00BC9CF0 /* HashableBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E9F3C427E45B3C00BC9CF0 /* HashableBootCamp.swift */; };
+		81EA676427EACB19007B73B3 /* ArraysBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81EA676327EACB19007B73B3 /* ArraysBootCamp.swift */; };
 		81F1C19A27D8598F00D71CEF /* ScrollViewReaderBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1C19927D8598E00D71CEF /* ScrollViewReaderBootCamp.swift */; };
 		81F1C19C27D8613100D71CEF /* GeometryReaderBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1C19B27D8613000D71CEF /* GeometryReaderBootCamp.swift */; };
 		81F1C19E27D87A2A00D71CEF /* MultipleSheetBootCamp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81F1C19D27D87A2900D71CEF /* MultipleSheetBootCamp.swift */; };
@@ -46,6 +47,7 @@
 		81E4613D27E97E5400196C3D /* HapticsBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsBootCamp.swift; sourceTree = "<group>"; };
 		81E4613F27E9862B00196C3D /* NotificationBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationBootCamp.swift; sourceTree = "<group>"; };
 		81E9F3C427E45B3C00BC9CF0 /* HashableBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashableBootCamp.swift; sourceTree = "<group>"; };
+		81EA676327EACB19007B73B3 /* ArraysBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArraysBootCamp.swift; sourceTree = "<group>"; };
 		81F1C19927D8598E00D71CEF /* ScrollViewReaderBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewReaderBootCamp.swift; sourceTree = "<group>"; };
 		81F1C19B27D8613000D71CEF /* GeometryReaderBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryReaderBootCamp.swift; sourceTree = "<group>"; };
 		81F1C19D27D87A2900D71CEF /* MultipleSheetBootCamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipleSheetBootCamp.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 				81E4613D27E97E5400196C3D /* HapticsBootCamp.swift */,
 				81E4613F27E9862B00196C3D /* NotificationBootCamp.swift */,
 				81E9F3C427E45B3C00BC9CF0 /* HashableBootCamp.swift */,
+				81EA676327EACB19007B73B3 /* ArraysBootCamp.swift */,
 				81AAF97927D5935400BD4A75 /* Assets.xcassets */,
 				81AAF97B27D5935400BD4A75 /* Preview Content */,
 			);
@@ -198,6 +201,7 @@
 				81AAF97827D5935200BD4A75 /* ContentView.swift in Sources */,
 				81D9DB4B27D9ADF10085CCA5 /* MaskBootCamp.swift in Sources */,
 				81F1C19E27D87A2A00D71CEF /* MultipleSheetBootCamp.swift in Sources */,
+				81EA676427EACB19007B73B3 /* ArraysBootCamp.swift in Sources */,
 				81E9F3C527E45B3D00BC9CF0 /* HashableBootCamp.swift in Sources */,
 				81CF767327D7288100056C8E /* DragGestureBootCamp2.swift in Sources */,
 				81F1C19A27D8598F00D71CEF /* ScrollViewReaderBootCamp.swift in Sources */,
