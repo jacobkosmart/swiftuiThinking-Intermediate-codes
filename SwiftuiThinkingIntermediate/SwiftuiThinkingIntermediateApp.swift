@@ -11,7 +11,7 @@ import SwiftUI
 struct SwiftuiThinkingIntermediateApp: App {
 	var body: some Scene {
 		WindowGroup {
-			CodableBootCamp()
+			DowanloadWithCombine()
 		}
 	}
 }
