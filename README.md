@@ -2999,7 +2999,603 @@ withAnimation(.spring()) {
 
 ---
 
-### 22.Custom publishers and Subscribers in Combine
+### 22.FileManager
+
+We can dave data on iOS devices is file manager. File manager works exactly like the file manager on your computer. When you go to save a document you usually open up a folder where you want to save it and then you click save.
+
+File manger on iPhone works the exact same way, we first find a folder where we want to save our documents and then we can save it and of course we can get it when we need it
+
+But, difference is that we are not actively double clicking and opening folders on our mac. In the code, the code exactly where to save a file and to fetch and find a file.
+
+For example, we can't save an image directly to core data but we can save it directly to the file manager. File manger is greate to save images, videos, audio files we can streo Json data. We can store any document we want in this file mananger
+
+#### General case save photo from assets to file manager
+
+```swift
+import SwiftUI
+
+// MARK: -  LOCALFILEMANGER
+class LocalFileManger {
+// singleton instance
+static let instance = LocalFileManger()
+
+func saveImage(image: UIImage, name: String) {
+guard let data = image.jpegData(compressionQuality: 0.5) else {
+  print("Error getting data")
+  return } // compress 50 percent of quality from original size
+// image.pngData() // if image is png format this code use
+
+// let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+// let directory2 = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+// let directory3 = FileManager.default.temporaryDirectory
+// let path = directory2?.appendingPathComponent("\(name).jpg")
+
+guard
+  let path = FileManager
+    .default
+    .urls(for: .cachesDirectory, in: .userDomainMask)
+    .first?
+    .appendingPathComponent("\(name).jpg") else {
+      print("Eoor getting path.")
+      return
+    }
+
+do {
+    try data.write(to: path)
+  print("Success saving")
+} catch let error {
+  print("Error saving. \(error)")
+}
+}
+}
+
+// MARK: -  VIEWMODEL
+class FileMagerViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var image: UIImage? = nil
+let imageName: String = "pic"
+let manager = LocalFileManger.instance
+// MARK: -  INIT
+init() {
+  getImageFromAssetsFolder()
+}
+// MARK: -  FUNCTION
+func getImageFromAssetsFolder() {
+  image = UIImage(named: imageName)
+}
+func saveImage() {
+  guard let image = image else { return }
+  manager.saveImage(image: image, name: imageName)
+}
+}
+
+// MARK: -  VIEW
+struct FileManagerBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject var vm = FileMagerViewModel()
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+VStack (spacing: 20) {
+if let image = vm.image {
+  Image(uiImage: image)
+    .resizable()
+    .scaledToFill()
+    .frame(width: 200, height: 200)
+    .clipped()
+    .cornerRadius(10)
+}
+
+Button {
+  vm.saveImage()
+} label: {
+  Text("Save to File Manager")
+    .foregroundColor(.white)
+    .font(.headline)
+    .padding()
+    .padding(.horizontal)
+    .background(Color.blue.cornerRadius(10))
+}
+
+Spacer()
+}  //: VSTACK
+.navigationTitle("File Manager ")
+} //: NAVIGATION
+}
+}
+
+```
+
+<img height="350" alt="image" src="https://user-images.githubusercontent.com/28912774/160966088-5eca9b4b-6d01-464b-87cc-90257738cbf5.png">
+
+<img width="718" alt="image" src="https://user-images.githubusercontent.com/28912774/160966246-8b508636-1be3-47f3-9684-a713ad751af9.png">
+
+#### Getting it back from the file manger
+
+This is great for persisting images in your app if you download some really important content you can save it to the file manger and it will save and persist
+
+```swift
+import SwiftUI
+
+// MARK: -  LOCALFILEMANGER
+class LocalFileManger {
+// singleton instance
+static let instance = LocalFileManger()
+
+func saveImage(image: UIImage, name: String) {
+guard
+  let data = image.jpegData(compressionQuality: 0.5),
+  let path = getPathForImage(name: name) else {
+  print("Error getting data")
+  return } // compress 50 percent of quality from original size
+// image.pngData() // if image is png format this code use
+
+// let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+// let directory2 = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+// let directory3 = FileManager.default.temporaryDirectory
+// let path = directory2?.appendingPathComponent("\(name).jpg")
+
+do {
+    try data.write(to: path)
+  print("Success saving")
+} catch let error {
+  print("Error saving. \(error)")
+}
+}
+
+func getIamge(name: String)-> UIImage? {
+guard
+  let path = getPathForImage(name: name)?.path,
+  FileManager.default.fileExists(atPath: path) else {
+    print("Error getting path.")
+    return nil
+  }
+  return UIImage(contentsOfFile: path)
+}
+func getPathForImage(name: String)-> URL? {
+guard
+  let path = FileManager
+    .default
+    .urls(for: .cachesDirectory, in: .userDomainMask)
+    .first?
+    .appendingPathComponent("\(name).jpg") else {
+      print("Error getting path.")
+      return nil
+    }
+return path
+}
+}
+
+// MARK: -  VIEWMODEL
+class FileMagerViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var image: UIImage? = nil
+let imageName: String = "pic"
+let manager = LocalFileManger.instance
+// MARK: -  INIT
+init() {
+  // getImageFromAssetsFolder()
+  getImageFromFileManager()
+}
+// MARK: -  FUNCTION
+func getImageFromAssetsFolder() {
+  image = UIImage(named: imageName)
+}
+func getImageFromFileManager() {
+  image = manager.getIamge(name: imageName)
+}
+func saveImage() {
+  guard let image = image else { return }
+  manager.saveImage(image: image, name: imageName)
+}
+}
+
+// MARK: -  VIEW
+struct FileManagerBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject var vm = FileMagerViewModel()
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+VStack (spacing: 20) {
+  if let image = vm.image {
+    Image(uiImage: image)
+      .resizable()
+      .scaledToFill()
+      .frame(width: 200, height: 200)
+      .clipped()
+      .cornerRadius(10)
+  }
+
+  Button {
+    vm.saveImage()
+  } label: {
+    Text("Save to File Manager")
+      .foregroundColor(.white)
+      .font(.headline)
+      .padding()
+      .padding(.horizontal)
+      .background(Color.blue.cornerRadius(10))
+  }
+
+  Spacer()
+}  //: VSTACK
+.navigationTitle("File Manager ")
+} //: NAVIGATION
+}
+}
+```
+
+#### Delete the file from File manager
+
+You should assume that if you save it to the manager it's going to be there until you explicitly delete it so if you are saving hundreds of images they're all getting saved and you don't want to take up too much space on that user's device
+
+So, it's very important to monitor and delete odl items from the file manager
+
+If it's actually saving or deleting because in your app you probably want to give some user feedbacklike if it actually saved or if it actually deleted
+
+```swift
+import SwiftUI
+
+// MARK: -  LOCALFILEMANGER
+class LocalFileManger {
+// singleton instance
+static let instance = LocalFileManger()
+
+func saveImage(image: UIImage, name: String) -> String {
+guard
+  let data = image.jpegData(compressionQuality: 0.5),
+  let path = getPathForImage(name: name) else {
+    print("Error getting data")
+    return "Error getting data" } // compress 50 percent of quality from original size
+// image.pngData() // if image is png format this code use
+
+// let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+// let directory2 = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+// let directory3 = FileManager.default.temporaryDirectory
+// let path = directory2?.appendingPathComponent("\(name).jpg")
+
+do {
+  try data.write(to: path)
+  print("Success saving")
+  return "Success saving"
+} catch let error {
+  print("Error saving. \(error)")
+  return "Error saving.\(error)"
+}
+}
+
+func getIamge(name: String)-> UIImage? {
+guard
+  let path = getPathForImage(name: name)?.path,
+  FileManager.default.fileExists(atPath: path) else {
+    print("Error getting path.")
+    return nil
+  }
+return UIImage(contentsOfFile: path)
+}
+
+func deleteImage(name: String)-> String {
+guard
+  let path = getPathForImage(name: name),
+  FileManager.default.fileExists(atPath: path.path) else {
+    print("Error getting path.")
+    return "Error getting path."
+  }
+
+do {
+  try FileManager.default.removeItem(at: path)
+  print("Sucessfully deleted.")
+  return "Sucessfully deleted."
+} catch let error {
+  print("Error deleting image. \(error)")
+  return "Error deleting image. \(error)"
+}
+}
+func getPathForImage(name: String)-> URL? {
+guard
+  let path = FileManager
+    .default
+    .urls(for: .cachesDirectory, in: .userDomainMask)
+    .first?
+    .appendingPathComponent("\(name).jpg") else {
+      print("Error getting path.")
+      return nil
+    }
+return path
+}
+}
+
+// MARK: -  VIEWMODEL
+class FileMagerViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var image: UIImage? = nil
+let imageName: String = "pic"
+let manager = LocalFileManger.instance
+@Published var inforMessage: String = ""
+// MARK: -  INIT
+init() {
+  getImageFromAssetsFolder()
+  // getImageFromFileManager()
+}
+// MARK: -  FUNCTION
+func getImageFromAssetsFolder() {
+  image = UIImage(named: imageName)
+}
+func getImageFromFileManager() {
+  image = manager.getIamge(name: imageName)
+}
+func saveImage() {
+  guard let image = image else { return }
+  inforMessage = manager.saveImage(image: image, name: imageName)
+}
+func deleteImage() {
+  inforMessage =  manager.deleteImage(name: imageName)
+}
+}
+
+// MARK: -  VIEW
+struct FileManagerBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject var vm = FileMagerViewModel()
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+VStack (spacing: 20) {
+if let image = vm.image {
+Image(uiImage: image)
+  .resizable()
+  .scaledToFill()
+  .frame(width: 200, height: 200)
+  .clipped()
+  .cornerRadius(10)
+}
+
+HStack {
+Button {
+  vm.saveImage()
+} label: {
+  Text("Save to File Manager")
+    .foregroundColor(.white)
+    .font(.headline)
+    .padding()
+    .padding(.horizontal)
+    .background(Color.blue.cornerRadius(10))
+}
+
+Button {
+  vm.deleteImage()
+} label: {
+  Text("Delete from File Manager")
+    .foregroundColor(.white)
+    .font(.headline)
+    .padding()
+    .padding(.horizontal)
+    .background(Color.red.cornerRadius(10))
+}
+} //: HSTACK
+
+Text(vm.inforMessage)
+.font(.largeTitle)
+.fontWeight(.semibold)
+.foregroundColor(.purple)
+
+Spacer()
+}  //: VSTACK
+.navigationTitle("File Manager ")
+} //: NAVIGATION
+}
+}
+```
+
+<img height="350" alt="image" src="https://user-images.githubusercontent.com/28912774/160993374-ac2d73cf-c893-4a76-8da8-9be0fed45cab.gif">
+
+#### Save stuff in custom folder (crete, delete folder)
+
+```swift
+import SwiftUI
+
+// MARK: -  LOCALFILEMANGER
+class LocalFileManger {
+// singleton instance
+static let instance = LocalFileManger()
+let folderName = "MyApp_Images"
+
+init() {
+createFolderIfNeeded()
+}
+// MARK: -  FUNCTION
+func createFolderIfNeeded() {
+guard
+let path = FileManager
+  .default
+  .urls(for: .cachesDirectory, in: .userDomainMask)
+  .first?
+  .appendingPathComponent(folderName) // custom create own folder in FM
+  .path else {
+    return
+  }
+if !FileManager.default.fileExists(atPath: path) {
+do {
+  try FileManager.default.createDirectory(atPath: path, withIntermediateDirectories: true, attributes: nil)
+  print("Success creating folder")
+} catch let error {
+  print("Error creating folder .\(error)")
+}
+}
+}
+
+func deleteFolder() {
+guard
+  let path = FileManager
+    .default
+    .urls(for: .cachesDirectory, in: .userDomainMask)
+    .first?
+    .appendingPathComponent(folderName) // custom create own folder in FM
+    .path else {
+      return
+    }
+do {
+  try FileManager.default.removeItem(atPath: path)
+  print("Success deleting folder")
+} catch let error {
+  print("Error deleting folder. \(error)")
+}
+}
+
+func saveImage(image: UIImage, name: String) -> String {
+guard
+  let data = image.jpegData(compressionQuality: 0.5),
+  let path = getPathForImage(name: name) else {
+    print("Error getting data")
+    return "Error getting data" } // compress 50 percent of quality from original size
+// image.pngData() // if image is png format this code use
+
+// let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+// let directory2 = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first
+// let directory3 = FileManager.default.temporaryDirectory
+// let path = directory2?.appendingPathComponent("\(name).jpg")
+
+do {
+  try data.write(to: path)
+  print(path)
+  return "Success saving"
+} catch let error {
+  print("Error saving. \(error)")
+  return "Error saving.\(error)"
+}
+}
+
+func getIamge(name: String)-> UIImage? {
+guard
+  let path = getPathForImage(name: name)?.path,
+  FileManager.default.fileExists(atPath: path) else {
+    print("Error getting path.")
+    return nil
+  }
+return UIImage(contentsOfFile: path)
+}
+
+func deleteImage(name: String)-> String {
+guard
+  let path = getPathForImage(name: name)?.path,
+  FileManager.default.fileExists(atPath: path) else {
+    print("Error getting path.")
+    return "Error getting path."
+  }
+
+do {
+  try FileManager.default.removeItem(atPath: path)
+  print("Sucessfully deleted.")
+  return "Sucessfully deleted."
+} catch let error {
+  print("Error deleting image. \(error)")
+  return "Error deleting image. \(error)"
+}
+}
+func getPathForImage(name: String)-> URL? {
+guard
+  let path = FileManager
+    .default
+    .urls(for: .cachesDirectory, in: .userDomainMask)
+    .first?
+    .appendingPathComponent(folderName)
+    .appendingPathComponent("\(name).jpg") else {
+      print("Error getting path.")
+      return nil
+    }
+return path
+}
+}
+
+// MARK: -  VIEWMODEL
+class FileMagerViewModel: ObservableObject {
+// MARK: -  PROPERTY
+@Published var image: UIImage? = nil
+let imageName: String = "pic"
+let manager = LocalFileManger.instance
+@Published var inforMessage: String = ""
+// MARK: -  INIT
+init() {
+getImageFromAssetsFolder()
+// getImageFromFileManager()
+}
+// MARK: -  FUNCTION
+func getImageFromAssetsFolder() {
+image = UIImage(named: imageName)
+}
+func getImageFromFileManager() {
+image = manager.getIamge(name: imageName)
+}
+func saveImage() {
+guard let image = image else { return }
+inforMessage = manager.saveImage(image: image, name: imageName)
+}
+func deleteImage() {
+inforMessage =  manager.deleteImage(name: imageName)
+manager.deleteFolder()
+}
+}
+
+// MARK: -  VIEW
+struct FileManagerBootCamp: View {
+// MARK: -  PROPERTY
+@StateObject var vm = FileMagerViewModel()
+// MARK: -  BODY
+var body: some View {
+NavigationView {
+VStack (spacing: 20) {
+if let image = vm.image {
+  Image(uiImage: image)
+    .resizable()
+    .scaledToFill()
+    .frame(width: 200, height: 200)
+    .clipped()
+    .cornerRadius(10)
+}
+
+HStack {
+  Button {
+    vm.saveImage()
+  } label: {
+    Text("Save to File Manager")
+      .foregroundColor(.white)
+      .font(.headline)
+      .padding()
+      .padding(.horizontal)
+      .background(Color.blue.cornerRadius(10))
+  }
+
+  Button {
+    vm.deleteImage()
+  } label: {
+    Text("Delete from File Manager")
+      .foregroundColor(.white)
+      .font(.headline)
+      .padding()
+      .padding(.horizontal)
+      .background(Color.red.cornerRadius(10))
+  }
+} //: HSTACK
+
+Text(vm.inforMessage)
+  .font(.largeTitle)
+  .fontWeight(.semibold)
+  .foregroundColor(.purple)
+
+Spacer()
+}  //: VSTACK
+.navigationTitle("File Manager ")
+} //: NAVIGATION
+}
+}
+```
+
+<img width="612" alt="image" src="https://user-images.githubusercontent.com/28912774/160997312-77fd37cb-2971-42c5-9f4a-27f285875290.png">
+
+---
+
+### 23.NSCache
 
 ```swift
 
@@ -3009,27 +3605,7 @@ withAnimation(.spring()) {
 
 ---
 
-### 23.FileManager
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
----
-
-### 24.NSCache
-
-```swift
-
-```
-
-  <img height="350"  alt="스크린샷" src="">
-
----
-
-### 25.Download and Save images
+### 24.Download and Save images
 
 ```swift
 
